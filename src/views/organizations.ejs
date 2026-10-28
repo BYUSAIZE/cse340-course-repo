@@ -1,0 +1,40 @@
+<%- include('partials/header') %>
+
+<div class="content-container">
+  <h1><%= title %></h1>
+  <p>We work closely with local partner organizations dedicated to community development, sustainability, and support across various sectors.</p>
+  
+  <div class="org-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+    
+    <!-- Environmental -->
+    <div class="org-card" style="background: #ffffff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center;">
+      <img src="/images/enviroment.png" alt="Environmental Initiative" style="max-width: 100%; height: 140px; object-fit: cover; border-radius: 4px; margin-bottom: 1rem;">
+      <h3>Environmental Focus</h3>
+      <p>Supporting conservation, clean-ups, and protecting local ecosystems.</p>
+    </div>
+
+    <!-- Educational -->
+    <div class="org-card" style="background: #ffffff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center;">
+      <img src="/images/education.png" alt="Educational Support" style="max-width: 100%; height: 140px; object-fit: cover; border-radius: 4px; margin-bottom: 1rem;">
+      <h3>Educational Initiatives</h3>
+      <p>Partnering with organizations focused on tutoring, literacy, and youth mentoring.</p>
+    </div>
+
+    <!-- Community Service -->
+    <div class="org-card" style="background: #ffffff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center;">
+      <img src="/images/communitysevice.png" alt="Community Service" style="max-width: 100%; height: 140px; object-fit: cover; border-radius: 4px; margin-bottom: 1rem;">
+      <h3>Community Outreach</h3>
+      <p>Working alongside local food banks and neighborhood improvement projects.</p>
+    </div>
+
+    <!-- Health and Wellness -->
+    <div class="org-card" style="background: #ffffff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center;">
+      <img src="/images/wellness.png" alt="Health and Wellness" style="max-width: 100%; height: 140px; object-fit: cover; border-radius: 4px; margin-bottom: 1rem;">
+      <h3>Health & Wellness</h3>
+      <p>Promoting physical fitness, mental health awareness, and local health programs.</p>
+    </div>
+
+  </div>
+</div>
+
+<%- include('partials/footer') %>
