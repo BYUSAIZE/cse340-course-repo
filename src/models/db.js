@@ -2,14 +2,10 @@ import { Pool } from 'pg';
 
 const pool = new Pool({
     connectionString: process.env.DB_URL,
-    ssl: true
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
-
-/**
- * If you get SSL errors even though your credentials are correct,
- * change `ssl: true` above to:
- * ssl: { rejectUnauthorized: false }
- */
 
 let db = null;
 
