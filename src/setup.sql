@@ -41,3 +41,40 @@ INSERT INTO service_project (organization_id, title, description, location, proj
 (3, 'Winter Clothing Drive', 'Collecting and distributing blankets and warm clothes.', 'Hatfield', '2027-01-30'),
 (3, 'Charity Fun Run', 'Fundraising run supporting local charities.', 'Sam Nujoma Street', '2027-02-27'),
 (3, 'Volunteer Orientation Day', 'Training new volunteers and matching them with projects.', 'Harare CBD', '2027-03-06');
+
+CREATE TABLE IF NOT EXISTS category (
+    category_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS project_category (
+    project_id INTEGER NOT NULL,
+    category_id INTEGER NOT NULL,
+    PRIMARY KEY (project_id, category_id),
+    FOREIGN KEY (project_id) REFERENCES service_project (project_id) ON DELETE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES category (category_id) ON DELETE CASCADE
+);
+
+INSERT INTO category (name) VALUES
+('Environmental'),
+('Education'),
+('Community Support'),
+('Infrastructure');
+
+-- 1 Environmental, 2 Education, 3 Community Support, 4 Infrastructure
+INSERT INTO project_category (project_id, category_id) VALUES
+(1, 4), (1, 3),
+(2, 4), (2, 3),
+(3, 2), (3, 4),
+(4, 4), (4, 1),
+(5, 4),
+(6, 1), (6, 3),
+(7, 1), (7, 2),
+(8, 2), (8, 1),
+(9, 3),
+(10, 1),
+(11, 3),
+(12, 1), (12, 3),
+(13, 3),
+(14, 3),
+(15, 2), (15, 3);
