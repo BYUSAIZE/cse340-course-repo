@@ -1,21 +1,48 @@
-<%- include('partials/header') %>
+<%- include('partials/header', { title }) %>
 
 <div class="content-container">
-  <h1><%= title %></h1>
-  <p>We work closely with local partner organizations dedicated to community development, sustainability, and support across various sectors.</p>
+    <h1><%= title %></h1>
 
-  <div class="org-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+    <p>
+        We work closely with local partner organizations dedicated to
+        community development, sustainability, and support across various sectors.
+    </p>
 
-    <% organizations.forEach(org => { %>
-      <div class="org-card" style="background: #ffffff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center;">
-        <img src="/images/<%= org.logo_filename %>" alt="<%= org.name %> logo" style="max-width: 100%; height: 140px; object-fit: cover; border-radius: 4px; margin-bottom: 1rem;">
-        <h3><%= org.name %></h3>
-        <p><%= org.description %></p>
-        <p><a href="mailto:<%= org.contact_email %>"><%= org.contact_email %></a></p>
-      </div>
-    <% }); %>
+    <div class="org-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
 
-  </div>
+        <% organizations.forEach(org => { %>
+            <div class="org-card" style="background: #ffffff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center;">
+
+                <% if (org.logo_filename) { %>
+                    <img
+                        src="/images/<%= org.logo_filename %>"
+                        alt="<%= org.name %> logo"
+                        style="max-width: 100%; height: 140px; object-fit: cover; border-radius: 4px; margin-bottom: 1rem;"
+                    >
+                <% } %>
+
+                <h3>
+                    <a href="/organization/<%= org.organization_id %>">
+                        <%= org.name %>
+                    </a>
+                </h3>
+
+                <p><%= org.description %></p>
+
+                <p>
+                    <a href="mailto:<%= org.contact_email %>">
+                        <%= org.contact_email %>
+                    </a>
+                </p>
+
+                <a href="/organization/<%= org.organization_id %>">
+                    View Organization Details
+                </a>
+
+            </div>
+        <% }); %>
+
+    </div>
 </div>
 
 <%- include('partials/footer') %>

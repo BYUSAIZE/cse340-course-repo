@@ -1,17 +1,35 @@
-<%- include('partials/header') %>
+<%- include('partials/header', { title }) %>
 
 <main>
     <h1><%= title %></h1>
 
     <h2>Upcoming Service Projects</h2>
-    <ul>
-        <% projects.forEach(project => { %>
-            <li>
-                <%= new Date(project.project_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %>:
-                <%= project.title %> (<em><%= project.organization_name %></em>)
-            </li>
-        <% }); %>
-    </ul>
+
+    <% if (projects.length > 0) { %>
+        <ul>
+            <% projects.forEach(project => { %>
+                <li>
+                    <%= new Date(project.project_date).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    }) %>:
+
+                    <a href="/project/<%= project.project_id %>">
+                        <%= project.title %>
+                    </a>
+
+                    (<em>
+                        <a href="/organization/<%= project.organization_id %>">
+                            <%= project.organization_name %>
+                        </a>
+                    </em>)
+                </li>
+            <% }); %>
+        </ul>
+    <% } else { %>
+        <p>There are currently no upcoming service projects.</p>
+    <% } %>
 </main>
 
 <%- include('partials/footer') %>

@@ -1,0 +1,19 @@
+<%- include('partials/header', { title }) %>
+
+<main class="container">
+    <h1><%= title %></h1>
+
+    <section>
+        <h2>Error <%= statusCode %></h2>
+
+        <p><%= message %></p>
+
+        <p>
+            We're sorry, but we couldn't complete your request.
+        </p>
+
+        <a href="/">Return to Home</a>
+    </section>
+</main>
+
+<%- include('partials/footer') %>
