@@ -36,4 +36,36 @@ const getOrganizationById = async (organizationId) => {
     return result.rows[0];
 };
 
-export { getAllOrganizations, getOrganizationById };
+// Create a new organization and return its new ID
+const createOrganization = async (name, description, contactEmail, logoFilename) => {
+    const query = `
+        INSERT INTO public.organization (name, description, contact_email, logo_filename)
+        VALUES ($1, $2, $3, $4)
+        RETURNING organization_id;
+    `;
+
+    const result = await db.query(query, [name, description, contactEmail, logoFilename]);
+
+    return result.rows[0].organization_id;
+};
+
+// Update an existing organization (the logo stays as it is)
+const updateOrganization = async (organizationId, name, description, contactEmail) => {
+    const query = `
+        UPDATE public.organization
+        SET name = $1, description = $2, contact_email = $3
+        WHERE organization_id = $4
+        RETURNING organization_id;
+    `;
+
+    const result = await db.query(query, [name, description, contactEmail, organizationId]);
+
+    return result.rows[0]?.organization_id;
+};
+
+export {
+    getAllOrganizations,
+    getOrganizationById,
+    createOrganization,
+    updateOrganization
+};

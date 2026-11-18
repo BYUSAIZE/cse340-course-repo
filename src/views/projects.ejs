@@ -5,6 +5,8 @@
 
     <h2>Upcoming Service Projects</h2>
 
+    <p><a href="/new-project">Add New Service Project</a></p>
+
     <% if (projects.length > 0) { %>
         <ul>
             <% projects.forEach(project => { %>
@@ -24,6 +26,8 @@
                             <%= project.organization_name %>
                         </a>
                     </em>)
+
+                    [<a href="/edit-project/<%= project.project_id %>">Edit</a>]
                 </li>
             <% }); %>
         </ul>

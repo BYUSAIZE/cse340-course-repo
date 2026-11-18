@@ -8,6 +8,8 @@
         community development, sustainability, and support across various sectors.
     </p>
 
+    <p><a href="/new-organization">Add New Organization</a></p>
+
     <div class="org-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
 
         <% organizations.forEach(org => { %>
@@ -38,6 +40,10 @@
                 <a href="/organization/<%= org.organization_id %>">
                     View Organization Details
                 </a>
+
+                <p>
+                    <a href="/edit-organization/<%= org.organization_id %>">Edit Organization</a>
+                </p>
 
             </div>
         <% }); %>

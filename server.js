@@ -1,9 +1,9 @@
 import { testConnection } from './src/models/db.js';
 
 import homeRoute from './src/routes/homeRoute.js';
-import categoryRoute from './src/routes/categoryRoute.js';
-import projectRoute from './src/routes/projectRoute.js';
-import organizationRoute from './src/routes/organizationRoute.js';
+import categoryRoute, { categoryFormRouter } from './src/routes/categoryRoute.js';
+import projectRoute, { projectFormRouter } from './src/routes/projectRoute.js';
+import organizationRoute, { organizationFormRouter } from './src/routes/organizationRoute.js';
 
 import express from 'express';
 import { fileURLToPath } from 'url';
@@ -19,6 +19,7 @@ const app = express();
 
 // Middleware
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.urlencoded({ extended: true }));
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
@@ -29,14 +30,17 @@ app.use('/', homeRoute);
 // Organization routes
 app.use('/organizations', organizationRoute);
 app.use('/organization', organizationRoute);
+app.use('/', organizationFormRouter);
 
 // Project routes
 app.use('/projects', projectRoute);
 app.use('/project', projectRoute);
+app.use('/', projectFormRouter);
 
 // Category routes
 app.use('/categories', categoryRoute);
 app.use('/category', categoryRoute);
+app.use('/', categoryFormRouter);
 
 // 404 error handler
 app.use((req, res, next) => {

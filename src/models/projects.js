@@ -33,6 +33,7 @@ const getProjectById = async (projectId) => {
             sp.description,
             sp.location,
             sp.project_date,
+            to_char(sp.project_date, 'YYYY-MM-DD') AS project_date_input,
             o.organization_id,
             o.name AS organization_name
         FROM public.service_project sp
@@ -65,8 +66,41 @@ const getProjectsByOrganizationId = async (organizationId) => {
     return result.rows;
 };
 
+// Create a new service project and return its new ID
+const createProject = async (title, description, location, projectDate, organizationId) => {
+    const query = `
+        INSERT INTO public.service_project (title, description, location, project_date, organization_id)
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING project_id;
+    `;
+
+    const result = await db.query(query, [title, description, location, projectDate, organizationId]);
+
+    return result.rows[0].project_id;
+};
+
+// Update an existing service project
+const updateProject = async (projectId, title, description, location, projectDate, organizationId) => {
+    const query = `
+        UPDATE public.service_project
+        SET title = $1,
+            description = $2,
+            location = $3,
+            project_date = $4,
+            organization_id = $5
+        WHERE project_id = $6
+        RETURNING project_id;
+    `;
+
+    const result = await db.query(query, [title, description, location, projectDate, organizationId, projectId]);
+
+    return result.rows[0]?.project_id;
+};
+
 export {
     getAllProjects,
     getProjectById,
-    getProjectsByOrganizationId
+    getProjectsByOrganizationId,
+    createProject,
+    updateProject
 };

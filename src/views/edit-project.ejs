@@ -1,0 +1,72 @@
+<%- include('partials/header', { title }) %>
+
+<main class="container">
+  <h1><%= title %></h1>
+
+  <% if (errors.length > 0) { %>
+    <ul class="form-errors" role="alert">
+      <% errors.forEach(error => { %>
+        <li><%= error.msg %></li>
+      <% }) %>
+    </ul>
+  <% } %>
+
+  <form action="/edit-project/<%= project.project_id %>" method="post" class="category-form">
+    <label for="title">Project Title</label>
+    <input
+      type="text"
+      id="title"
+      name="title"
+      value="<%= project.title %>"
+      required
+      minlength="3"
+      maxlength="150"
+    >
+
+    <label for="description">Description</label>
+    <textarea
+      id="description"
+      name="description"
+      rows="4"
+      required
+      maxlength="500"
+    ><%= project.description %></textarea>
+
+    <label for="location">Location</label>
+    <input
+      type="text"
+      id="location"
+      name="location"
+      value="<%= project.location %>"
+      required
+      maxlength="150"
+    >
+
+    <label for="projectDate">Project Date</label>
+    <input
+      type="date"
+      id="projectDate"
+      name="projectDate"
+      value="<%= project.project_date_input %>"
+      required
+    >
+
+    <label for="organizationId">Organization</label>
+    <select id="organizationId" name="organizationId" required>
+      <option value="">Choose an organization</option>
+      <% organizations.forEach(org => { %>
+        <option
+          value="<%= org.organization_id %>"
+          <%= Number(project.organization_id) === Number(org.organization_id) ? 'selected' : '' %>
+        >
+          <%= org.name %>
+        </option>
+      <% }) %>
+    </select>
+
+    <button type="submit">Save Changes</button>
+    <a href="/projects">Cancel</a>
+  </form>
+</main>
+
+<%- include('partials/footer') %>
