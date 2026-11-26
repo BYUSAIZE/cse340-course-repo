@@ -1,6 +1,9 @@
 import { testConnection } from './src/models/db.js';
 
+import session from 'express-session';
+
 import homeRoute from './src/routes/homeRoute.js';
+import authRoute from './src/routes/authRoute.js';
 import categoryRoute, { categoryFormRouter } from './src/routes/categoryRoute.js';
 import projectRoute, { projectFormRouter } from './src/routes/projectRoute.js';
 import organizationRoute, { organizationFormRouter } from './src/routes/organizationRoute.js';
@@ -12,20 +15,50 @@ import path from 'path';
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
 const PORT = process.env.PORT || 3000;
 
+if (NODE_ENV === 'production' && !process.env.SESSION_SECRET) {
+    throw new Error('SESSION_SECRET must be set in production');
+}
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Render sits behind a proxy, which secure cookies need to know about
+app.set('trust proxy', 1);
+
 // Middleware
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
+
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'dev-only-secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: NODE_ENV === 'production',
+        maxAge: 1000 * 60 * 60 * 24
+    }
+}));
+
+// Make the logged-in user and a one-time flash message available to every view
+app.use((req, res, next) => {
+    res.locals.user = req.session.user || null;
+    res.locals.flash = req.session.flash || null;
+    delete req.session.flash;
+    next();
+});
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
 
 // Home page
 app.use('/', homeRoute);
+
+// Authentication and user routes
+app.use('/', authRoute);
 
 // Organization routes
 app.use('/organizations', organizationRoute);

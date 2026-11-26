@@ -78,3 +78,10 @@ INSERT INTO project_category (project_id, category_id) VALUES
 (13, 3),
 (14, 3),
 (15, 2), (15, 3);
+CREATE TABLE IF NOT EXISTS users (
+    user_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL DEFAULT 'user'
+);
