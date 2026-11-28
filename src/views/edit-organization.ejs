@@ -41,6 +41,24 @@
             maxlength="255"
         >
 
+        <label for="logoFilename">Logo</label>
+        <select id="logoFilename" name="logoFilename" required>
+            <% logos.forEach(logo => { %>
+                <option
+                    value="<%= logo %>"
+                    <%= organization.logo_filename === logo ? 'selected' : '' %>
+                >
+                    <%= logo %>
+                </option>
+            <% }) %>
+        </select>
+
+        <img
+            class="org-logo"
+            src="/images/<%= organization.logo_filename %>"
+            alt="Current logo for <%= organization.name %>"
+        >
+
         <button type="submit">Save Changes</button>
         <a href="/organizations">Cancel</a>
     </form>

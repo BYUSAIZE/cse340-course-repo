@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { body, validationResult } from 'express-validator';
 
 import {
@@ -9,8 +12,18 @@ import {
 
 import { getProjectsByOrganizationId } from '../models/projects.js';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const IMAGES_DIR = path.join(__dirname, '../../public/images');
+
 // Logo used for newly created organizations (must exist in public/images)
-const DEFAULT_LOGO = 'placeholder-logo.png';
+const DEFAULT_LOGO = 'logo.png';
+
+// List the image files a logo can be chosen from
+const getLogoOptions = () => {
+    return fs.readdirSync(IMAGES_DIR)
+        .filter((file) => /\.(png|jpe?g|gif|webp|svg)$/i.test(file))
+        .sort();
+};
 
 // Validation rules shared by the create and edit forms
 const organizationValidation = [
@@ -26,7 +39,11 @@ const organizationValidation = [
         .trim()
         .notEmpty().withMessage('Contact email is required')
         .isEmail().withMessage('Contact email must be a valid email address')
-        .isLength({ max: 255 }).withMessage('Contact email cannot be longer than 255 characters')
+        .isLength({ max: 255 }).withMessage('Contact email cannot be longer than 255 characters'),
+    body('logoFilename')
+        .trim()
+        .custom((value) => getLogoOptions().includes(value))
+        .withMessage('Please choose a logo from the list')
 ];
 
 // Display all organizations
@@ -85,7 +102,13 @@ const buildNewOrganizationPage = (req, res) => {
     res.render('new-organization', {
         title: 'New Organization',
         errors: [],
-        organization: { name: '', description: '', contact_email: '' }
+        logos: getLogoOptions(),
+        organization: {
+            name: '',
+            description: '',
+            contact_email: '',
+            logo_filename: DEFAULT_LOGO
+        }
     });
 };
 
@@ -93,17 +116,23 @@ const buildNewOrganizationPage = (req, res) => {
 const processNewOrganization = async (req, res, next) => {
     try {
         const errors = validationResult(req);
-        const { name, description, contactEmail } = req.body;
+        const { name, description, contactEmail, logoFilename } = req.body;
 
         if (!errors.isEmpty()) {
             return res.status(400).render('new-organization', {
                 title: 'New Organization',
                 errors: errors.array(),
-                organization: { name, description, contact_email: contactEmail }
+                logos: getLogoOptions(),
+                organization: {
+                    name,
+                    description,
+                    contact_email: contactEmail,
+                    logo_filename: logoFilename
+                }
             });
         }
 
-        await createOrganization(name, description, contactEmail, DEFAULT_LOGO);
+        await createOrganization(name, description, contactEmail, logoFilename);
         res.redirect('/organizations');
     } catch (error) {
         next(error);
@@ -132,6 +161,7 @@ const buildEditOrganizationPage = async (req, res, next) => {
         res.render('edit-organization', {
             title: 'Edit Organization',
             errors: [],
+            logos: getLogoOptions(),
             organization
         });
     } catch (error) {
@@ -151,22 +181,24 @@ const processEditOrganization = async (req, res, next) => {
         }
 
         const errors = validationResult(req);
-        const { name, description, contactEmail } = req.body;
+        const { name, description, contactEmail, logoFilename } = req.body;
 
         if (!errors.isEmpty()) {
             return res.status(400).render('edit-organization', {
                 title: 'Edit Organization',
                 errors: errors.array(),
+                logos: getLogoOptions(),
                 organization: {
                     organization_id: organizationId,
                     name,
                     description,
-                    contact_email: contactEmail
+                    contact_email: contactEmail,
+                    logo_filename: logoFilename
                 }
             });
         }
 
-        await updateOrganization(organizationId, name, description, contactEmail);
+        await updateOrganization(organizationId, name, description, contactEmail, logoFilename);
         res.redirect('/organizations');
     } catch (error) {
         next(error);

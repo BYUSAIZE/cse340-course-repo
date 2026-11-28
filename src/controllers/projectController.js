@@ -4,11 +4,19 @@ import {
     getAllProjects,
     getProjectById,
     createProject,
-    updateProject
+    updateProject,
+    setProjectCategories
 } from '../models/projects.js';
 
-import { getCategoriesByProjectId } from '../models/categories.js';
+import { getAllCategories, getCategoriesByProjectId } from '../models/categories.js';
 import { getAllOrganizations } from '../models/organizations.js';
+
+// Checkboxes send nothing, one string, or an array: always return an array of valid IDs
+const parseCategoryIds = (value) => {
+    return [].concat(value ?? [])
+        .map(Number)
+        .filter((id) => Number.isInteger(id) && id > 0);
+};
 
 // Validation rules shared by the create and edit forms
 const projectValidation = [
@@ -89,11 +97,14 @@ const buildProjectPage = async (req, res, next) => {
 const buildNewProjectPage = async (req, res, next) => {
     try {
         const organizations = await getAllOrganizations();
+        const categories = await getAllCategories();
 
         res.render('new-project', {
             title: 'New Service Project',
             errors: [],
             organizations,
+            categories,
+            selectedCategoryIds: [],
             project: {
                 title: '',
                 description: '',
@@ -112,14 +123,18 @@ const processNewProject = async (req, res, next) => {
     try {
         const errors = validationResult(req);
         const { title, description, location, projectDate, organizationId } = req.body;
+        const categoryIds = parseCategoryIds(req.body.categoryIds);
 
         if (!errors.isEmpty()) {
             const organizations = await getAllOrganizations();
+            const categories = await getAllCategories();
 
             return res.status(400).render('new-project', {
                 title: 'New Service Project',
                 errors: errors.array(),
                 organizations,
+                categories,
+                selectedCategoryIds: categoryIds,
                 project: {
                     title,
                     description,
@@ -130,7 +145,9 @@ const processNewProject = async (req, res, next) => {
             });
         }
 
-        await createProject(title, description, location, projectDate, Number(organizationId));
+        const projectId = await createProject(title, description, location, projectDate, Number(organizationId));
+        await setProjectCategories(projectId, categoryIds);
+
         res.redirect('/projects');
     } catch (error) {
         next(error);
@@ -157,11 +174,15 @@ const buildEditProjectPage = async (req, res, next) => {
         }
 
         const organizations = await getAllOrganizations();
+        const categories = await getAllCategories();
+        const projectCategories = await getCategoriesByProjectId(projectId);
 
         res.render('edit-project', {
             title: 'Edit Service Project',
             errors: [],
             organizations,
+            categories,
+            selectedCategoryIds: projectCategories.map((category) => category.category_id),
             project
         });
     } catch (error) {
@@ -182,14 +203,18 @@ const processEditProject = async (req, res, next) => {
 
         const errors = validationResult(req);
         const { title, description, location, projectDate, organizationId } = req.body;
+        const categoryIds = parseCategoryIds(req.body.categoryIds);
 
         if (!errors.isEmpty()) {
             const organizations = await getAllOrganizations();
+            const categories = await getAllCategories();
 
             return res.status(400).render('edit-project', {
                 title: 'Edit Service Project',
                 errors: errors.array(),
                 organizations,
+                categories,
+                selectedCategoryIds: categoryIds,
                 project: {
                     project_id: projectId,
                     title,
@@ -202,6 +227,8 @@ const processEditProject = async (req, res, next) => {
         }
 
         await updateProject(projectId, title, description, location, projectDate, Number(organizationId));
+        await setProjectCategories(projectId, categoryIds);
+
         res.redirect('/projects');
     } catch (error) {
         next(error);

@@ -49,16 +49,16 @@ const createOrganization = async (name, description, contactEmail, logoFilename)
     return result.rows[0].organization_id;
 };
 
-// Update an existing organization (the logo stays as it is)
-const updateOrganization = async (organizationId, name, description, contactEmail) => {
+// Update an existing organization, including its logo
+const updateOrganization = async (organizationId, name, description, contactEmail, logoFilename) => {
     const query = `
         UPDATE public.organization
-        SET name = $1, description = $2, contact_email = $3
-        WHERE organization_id = $4
+        SET name = $1, description = $2, contact_email = $3, logo_filename = $4
+        WHERE organization_id = $5
         RETURNING organization_id;
     `;
 
-    const result = await db.query(query, [name, description, contactEmail, organizationId]);
+    const result = await db.query(query, [name, description, contactEmail, logoFilename, organizationId]);
 
     return result.rows[0]?.organization_id;
 };

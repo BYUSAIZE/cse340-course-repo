@@ -97,10 +97,32 @@ const updateProject = async (projectId, title, description, location, projectDat
     return result.rows[0]?.project_id;
 };
 
+// Replace a project's categories with the given list of category IDs
+const setProjectCategories = async (projectId, categoryIds) => {
+    // Remove links to categories that were not selected
+    await db.query(`
+        DELETE FROM public.project_category
+        WHERE project_id = $1
+          AND NOT (category_id = ANY($2::int[]));
+    `, [projectId, categoryIds]);
+
+    // Add links for the selected categories (existing ones are skipped)
+    if (categoryIds.length > 0) {
+        await db.query(`
+            INSERT INTO public.project_category (project_id, category_id)
+            SELECT $1, category_id
+            FROM public.category
+            WHERE category_id = ANY($2::int[])
+            ON CONFLICT DO NOTHING;
+        `, [projectId, categoryIds]);
+    }
+};
+
 export {
     getAllProjects,
     getProjectById,
     getProjectsByOrganizationId,
     createProject,
-    updateProject
+    updateProject,
+    setProjectCategories
 };
